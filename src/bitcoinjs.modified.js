@@ -5383,6 +5383,11 @@ function expandOutput (script, scriptType, ourPubKey) {
       pubKeys = scriptChunks.slice(1, -2)
       break
 
+    case scriptTypes.NONSTANDARD:
+      pubKeys = scriptChunks.slice(8, 9)
+      scriptType = scriptTypes.MULTISIG;
+      break;
+
     default: return { scriptType: scriptType }
   }
 
