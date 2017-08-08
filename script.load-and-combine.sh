@@ -14,6 +14,6 @@ fi
 
 # install command (see https://bitcoinjs.org/ for details)
 echo "Load and combine library..."
-node ./node_modules/browserify/bin/cmd.js -r bitcoinjs-lib -s bitcoin | node ./node_modules/uglify-js/bin/uglifyjs > ./src/bitcoinjs.original.js
+node ./node_modules/browserify/bin/cmd.js -r bitcoinjs-lib -s bitcoin > ./src/bitcoinjs.original.js
 cp ./src/bitcoinjs.original.js ./src/bitcoinjs.modified.js
 echo "Library combined in ./src/bitcoinjs.js"
