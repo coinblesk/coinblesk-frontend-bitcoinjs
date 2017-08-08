@@ -6,7 +6,7 @@ The Bitcoin.JS library does currently (v3.1.1) not fully support the Bitcoin [BI
 To support updates in an easy manner, there are two scripts provided.
 
 ## Development
-There are two folders available: `/src` and `/dist`. The source folder contains two complete Bitcoin.JS scripts. One should be the original script (`src/bitcoinjs.original.js` and the other one is a copy of it, which was then modified to approach BIP-65. The modified one (`src/bitcoinjs.modified.js`). This allows for an easy comparison between the files. When there is an update, you can easily move the necessary code.
+There are two folders available: `/src` and `/dist`. The source folder contains two complete Bitcoin.JS scripts. One should be the original script (`src/bitcoinjs.original.js` and the other one is a copy of it, which was then modified to approach BIP-65. This allows for an easy comparison between the files. When there is an update, you can easily move the necessary code.
 
 ### Update
   * Update the Bitcoin.JS version in the `package.json` and run `yarn install`
