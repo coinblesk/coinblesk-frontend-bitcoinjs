@@ -3994,7 +3994,8 @@ var types = {
   P2SH: 'scripthash',
   P2WPKH: 'witnesspubkeyhash',
   P2WSH: 'witnessscripthash',
-  WITNESS_COMMITMENT: 'witnesscommitment'
+  WITNESS_COMMITMENT: 'witnesscommitment',
+  CLTV: 'cltv'
 }
 
 function classifyOutput (script) {
@@ -4010,7 +4011,7 @@ function classifyOutput (script) {
   if (witnessCommitment.output.check(chunks)) return types.WITNESS_COMMITMENT
   if (nullData.output.check(chunks)) return types.NULLDATA
 
-  return types.NONSTANDARD
+  return types.CLTV
 }
 
 function classifyInput (script, allowIncomplete) {
@@ -5158,8 +5159,8 @@ var ops = require('bitcoin-ops')
 var typeforce = require('typeforce')
 var types = require('./types')
 var scriptTypes = bscript.types
-var SIGNABLE = [bscript.types.P2PKH, bscript.types.P2PK, bscript.types.MULTISIG]
-var P2SH = SIGNABLE.concat([bscript.types.P2WPKH, bscript.types.P2WSH])
+var SIGNABLE = [bscript.types.P2PKH, bscript.types.P2PK, bscript.types.MULTISIG, bscript.types.CLTV]
+var P2SH = SIGNABLE.concat([bscript.types.P2WPKH, bscript.types.P2WSH, bscript.types.CLTV])
 
 var ECPair = require('./ecpair')
 var ECSignature = require('./ecsignature')
@@ -5383,9 +5384,8 @@ function expandOutput (script, scriptType, ourPubKey) {
       pubKeys = scriptChunks.slice(1, -2)
       break
 
-    case scriptTypes.NONSTANDARD:
-      pubKeys = scriptChunks.slice(8, 9)
-      scriptType = scriptTypes.MULTISIG;
+    case scriptTypes.CLTV:
+      pubKeys = scriptChunks.slice(8, 9);
       break;
 
     default: return { scriptType: scriptType }
@@ -5541,7 +5541,21 @@ function buildStack (type, signatures, pubKeys, allowIncomplete) {
 
       return bscript.multisig.input.encodeStack(signatures /* see if it's necessary first */)
     }
-  } else {
+  } else if (type === scriptTypes.CLTV) {
+    console.log(type, signatures, pubKeys, allowIncomplete)
+    if (signatures.length > 0) {
+      signatures = signatures.map(function (signature) {
+        return signature || ops.OP_0
+      })
+      if (!allowIncomplete) {
+        // remove blank signatures
+        signatures = signatures.filter(function (x) { return x !== ops.OP_0 })
+      }
+
+      return bscript.multisig.input.encodeStack(signatures /* see if it's necessary first */)
+    }
+  }
+  else {
     throw new Error('Not yet supported')
   }
 
@@ -5573,6 +5587,13 @@ function buildInput (input, allowIncomplete) {
     scriptType = input.redeemScriptType
   }
 
+  if (scriptType === bscript.types.CLTV) {
+    p2sh = true
+    if (SIGNABLE.indexOf(input.redeemScriptType) !== -1) {
+        sig = buildStack(input.redeemScriptType, input.signatures, input.pubKeys, allowIncomplete)
+    }
+  }
+
   if (scriptType === bscript.types.P2WPKH) {
     // P2WPKH is a special case of P2PKH
     witness = buildStack(bscript.types.P2PKH, input.signatures, input.pubKeys, allowIncomplete)
@@ -5586,6 +5607,8 @@ function buildInput (input, allowIncomplete) {
       // rejects unsignble scripts - it MUST be signable at this point.
       throw new Error()
     }
+    
+    if (scriptType === bscript.types.CLTV)
 
     scriptType = input.witnessScriptType
   }
