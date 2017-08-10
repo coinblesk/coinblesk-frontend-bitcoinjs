@@ -2,7 +2,7 @@
   "name": "coinblesk-frontend-bitcoinjs",
   "version": "3.1.1",
   "description": "A Bitcoin.js wrapper with added functionality",
-  "main": "dist/bitcoinjs.min.js",
+  "main": "src/bitcoinjs.modified.js",
   "repository": "https://github.com/coinblesk/coinblesk-frontend-bitcoinjs.git",
   "author": "Sebastian Schrepfer <contact@schrepfer.io>",
   "devDependencies": {
