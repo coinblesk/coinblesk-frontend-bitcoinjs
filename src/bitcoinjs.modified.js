@@ -5542,7 +5542,6 @@ function buildStack (type, signatures, pubKeys, allowIncomplete) {
       return bscript.multisig.input.encodeStack(signatures /* see if it's necessary first */)
     }
   } else if (type === scriptTypes.CLTV) {
-    console.log(type, signatures, pubKeys, allowIncomplete)
     if (signatures.length > 0) {
       signatures = signatures.map(function (signature) {
         return signature || ops.OP_0
@@ -5608,8 +5607,6 @@ function buildInput (input, allowIncomplete) {
       throw new Error()
     }
     
-    if (scriptType === bscript.types.CLTV)
-
     scriptType = input.witnessScriptType
   }
 
